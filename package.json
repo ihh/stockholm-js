@@ -1,0 +1,24 @@
+{
+  "name": "Stockholm",
+  "version": "1.0.0",
+  "description": "Stockholm format alignment parser",
+  "main": "index.js",
+  "scripts": {
+    "test": "node ./node_modules/mocha/bin/mocha test/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ihh/Stockholm.git"
+  },
+  "author": "Ian Holmes <ihholmes@gmail.com>",
+  "license": "(MIT OR BSD-3-Clause)",
+  "bugs": {
+    "url": "https://github.com/ihh/Stockholm/issues"
+  },
+  "homepage": "https://github.com/ihh/Stockholm#readme",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "mocha": "^7.1.0"
+  }
+}
