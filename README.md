@@ -4,11 +4,13 @@ JavaScript parser for [Stockholm format](https://en.wikipedia.org/wiki/Stockholm
 
 ## Usage
 
+Using the example alignment file from the repository, [Lysine.stock](data/Lysine.stock)
+
 ~~~~
 const Stockholm = require('stockholm-js');
 const fs = require('fs');
 
-const text = fs.readFileSync ('data/Lysine.stock').toString();
+const text = fs.readFileSync ('Lysine.stock').toString();
 
 if (Stockholm.sniff (text)) {
   let align = Stockholm.parse (text);
