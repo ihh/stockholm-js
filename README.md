@@ -16,7 +16,7 @@ if (Stockholm.sniff (text)) {
   let align = Stockholm.parse (text);
   const rows = align.rows(),
         columns = align.columns(),
-        names = align.seqname;
+        names = align.seqname;  // the order of alignment rows is well-defined
 
   if (rows) {
     const newRow = align.seqdata[names[0]].replace(/./g,'N');
@@ -29,6 +29,7 @@ if (Stockholm.sniff (text)) {
   
   const seq = 'M93419.1/332-511'
   console.warn ("Structure of " + seq + " is " + align.gr.SS[seq])
+  console.warn ("First column of " + seq + " is " + align.seqdata[seq][0])
 
   console.log (align.toString());
   console.log (align.toFasta());
