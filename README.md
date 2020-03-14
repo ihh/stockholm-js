@@ -14,12 +14,12 @@ const text = fs.readFileSync ('Lysine.stock').toString();
 
 if (Stockholm.sniff (text)) {
   let align = Stockholm.parse (text);
-  let rows = align.rows(),
-      columns = align.columns(),
-      names = align.seqname;
+  const rows = align.rows(),
+        columns = align.columns(),
+        names = align.seqname;
 
   if (rows) {
-    let newRow = align.seqdata[names[0]].replace(/./g,'N');
+    const newRow = align.seqdata[names[0]].replace(/./g,'N');
     align.addRow ("NewRow", newRow);
     align.deleteRow ("AE017267.1/95018-94836");
   }
@@ -31,8 +31,15 @@ if (Stockholm.sniff (text)) {
   console.warn ("Structure of " + seq + " is " + align.gr.SS[seq])
 
   console.log (align.toString());
+  console.log (align.toFasta());
 
 } else {
   console.error ("Doesn't look like Stockholm format");
 }
+
+const align2 = Stockholm.fromSeqIndex ({ row1: 'AAAA', row2: 'GGGG', row3: 'AGAG' })
+console.log (align2.toString())
+
+const align3 = Stockholm.fromRowList ([['ancestor', 'AAAA'], ['descendant', 'AAGA']])
+console.log (align3.toFasta())
 ~~~~

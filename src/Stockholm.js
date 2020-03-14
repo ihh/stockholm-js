@@ -1,8 +1,8 @@
 let Stockholm = function() {
-  let obj = { gf: {},
-              gr: {},
-              gs: {},
-              gc: {},
+  let obj = { gf: {},  // gf[tag] = ARRAY
+              gc: {},  // gc[tag] = STRING
+              gs: {},  // gs[tag][seqname] = ARRAY
+              gr: {},  // gr[tag][seqname] = STRING
               seqname: [],
               seqdata: {} }
   Object.keys(obj).forEach ((prop) => this[prop] = obj[prop])
@@ -13,82 +13,109 @@ const formatStartRegex = /^# STOCKHOLM/;
 const formatEndRegex = /^\/\/\s*$/;
 const gfRegex = /^#=GF\s+(\S+)\s+(.*?)\s*$/;
 const gcRegex = /^#=GC\s+(\S+)\s+(.*?)\s*$/;
-const grRegex = /^#=GR\s+(\S+)\s+(\S+)\s+(.*?)\s*$/;
 const gsRegex = /^#=GS\s+(\S+)\s+(\S+)\s+(.*?)\s*$/;
+const grRegex = /^#=GR\s+(\S+)\s+(\S+)\s+(.*?)\s*$/;
 const lineRegex = /^\s*(\S+)\s+(\S+)\s*$/;
 const nonwhiteRegex = /\S/;
 
-const noFormatStart = "No format header: #=STOCKHOLM 1.0\n";
-const noFormatEnd = "No format footer: //\n";
-const badLine = "Malformed line\n";
+const noFormatStart = "No format header: #=STOCKHOLM 1.0";
+const noFormatEnd = "No format footer: //";
+const badLine = "Malformed line";
 const atLine = (n) => "(At line " + (n+1) + ") ";
 
 const sniff = (text) => formatStartRegex.test (text);
 
 const validate = (text) => {
   try {
-    parseAll (text)
+    parseAll (text, { strict: true })
   } catch (e) {
     return false
   }
   return true
 }
 
-const parseAll = (text) => {
+const error = (err) => { throw err; }
+const warning = (err) => console.warn(err);
+
+const parseAll = (text, opts) => {
+  opts = opts || {}
+  const maybeWarning = opts.quiet ? (() => null) : warning;
+  const maybeError = opts.strict ? error : maybeWarning;
   let db = [], stock = null
   const lines = text.split("\n")
   lines.forEach ((line, n) => {
+    const makeStock = () => {
+      if (!stock) {
+        maybeError (atLine(n) + noFormatStart);
+        stock = new Stockholm();
+      }
+    };
     let match;
     if (formatStartRegex.test(line)) {
-      if (stock) throw new Error (atLine(n) + noFormatEnd);
+      if (stock) maybeError (atLine(n) + noFormatEnd);
       stock = new Stockholm();
     } else if (formatEndRegex.test(line)) {
-      if (!stock) throw new Error (atLine(n) + noFormatStart);
-      db.push (stock);
+      if (stock)
+        db.push (stock);
+      else
+        maybeError (atLine(n) + noFormatStart);
       stock = null;
     } else if (match = gfRegex.exec(line)) {
-      if (!stock) throw new Error (atLine(n) + noFormatStart);
+      makeStock();
       stock.gf[match[1]] = stock.gf[match[1]] || [];
       stock.gf[match[1]].push (match[2]);
     } else if (match = gcRegex.exec(line)) {
-      if (!stock) throw new Error (atLine(n) + noFormatStart);
+      makeStock();
       stock.gc[match[1]] = stock.gc[match[1]] || '';
       stock.gc[match[1]] += match[2];
-    } else if (match = grRegex.exec(line)) {
-      if (!stock) throw new Error (atLine(n) + noFormatStart);
-      stock.gr[match[1]] = stock.gr[match[1]] || {};
-      stock.gr[match[1]][match[2]] = stock.gr[match[1]][match[2]] || '';
-      stock.gr[match[1]][match[2]] += match[3];
     } else if (match = gsRegex.exec(line)) {
-      if (!stock) throw new Error (atLine(n) + noFormatStart);
+      makeStock();
       stock.gs[match[1]] = stock.gs[match[1]] || {};
       stock.gs[match[1]][match[2]] = stock.gs[match[1]][match[2]] || [];
       stock.gs[match[1]][match[2]].push (match[3]);
+    } else if (match = grRegex.exec(line)) {
+      makeStock();
+      stock.gr[match[1]] = stock.gr[match[1]] || {};
+      stock.gr[match[1]][match[2]] = stock.gr[match[1]][match[2]] || '';
+      stock.gr[match[1]][match[2]] += match[3];
     } else if (match = lineRegex.exec(line)) {
-      if (!stock) throw new Error (atLine(n) + noFormatStart);
+      makeStock();
       if (!stock.seqdata[match[1]]) {
         stock.seqdata[match[1]] = '';
         stock.seqname.push (match[1]);
       }
       stock.seqdata[match[1]] += match[2];
     } else if (nonwhiteRegex.test (line)) {
-      throw new Error (atLine(n) + badLine);
+      error (atLine(n) + badLine);
     }
   })
   if (stock) {
-    console.warn ("Warning: no end line //");
+    maybeError ("Warning: no end line //");
     db.push (stock);
   }
   return db;
 }
 
-const parse = (text) => {
-  const db = parseAll (text);
+const parse = (text, opts) => {
+  const db = parseAll (text, opts);
   if (db.length === 0)
-    throw new Error ("No alignments found");
+    error ("No alignments found");
   if (db.length > 1)
-    throw new Error ("More than one alignment found");
+    error ("More than one alignment found");
   return db[0];
+}
+
+const fromSeqIndex = (seqdata, names) => {
+  let stock = new Stockholm()
+  names = names || Object.keys(seqdata)  // specifying order is optional
+  names.forEach ((name) => stock.addRow (name, seqdata[name]))
+  return stock
+}
+
+const fromRowList = (array) => {
+  let stock = new Stockholm()
+  array.forEach ((row) => stock.addRow (row[0], row[1]))
+  return stock
 }
 
 Stockholm.prototype.rows = function() {
@@ -110,6 +137,7 @@ Stockholm.prototype.allNames = function() {
       addName = (name) => { if (!isName[name]) { isName[name] = true; names.push (name) } },
       addNames = (list) => list.forEach (addName);
   addNames (this.seqname);
+  addNames (Object.keys (this.seqdata));  // just in case seqdata has been independently modified
   Object.keys(this.gr).forEach ((tag) => addNames (Object.keys(this.gr[tag])));
   Object.keys(this.gs).forEach ((tag) => addNames (Object.keys(this.gs[tag])));
   return names
@@ -127,7 +155,7 @@ Stockholm.prototype.allTags = function() {
 
 Stockholm.prototype.addRow = function (name, data) {
   if (this.seqdata[name])
-    throw new Error ("Duplicate row name")
+    error ("Duplicate row name")
   this.seqname.push (name)
   this.seqdata[name] = data || ''
   return this
@@ -135,7 +163,7 @@ Stockholm.prototype.addRow = function (name, data) {
 
 Stockholm.prototype.deleteRow = function (name) {
   if (!this.seqdata[name])
-    throw new Error ("Row not found")
+    error ("Row not found")
   this.seqname = this.seqname.filter ((n) => n !== name);
   delete this.seqdata[name];
   return this
@@ -154,10 +182,10 @@ function space (width) {
 Stockholm.prototype.toString = function (opts) {
   opts = opts || { width: 80 }
   const names = this.allNames(), cols = this.columns()
-  const width = opts.width || cols
-  const nameWidth = Math.max.apply (null, names.map ((name) => name.length))
-  const tagWidth = Math.max.apply (null, this.allTags().map ((tag) => tag.length))
+  const nameWidth = Math.max.apply (null, names.map ((name) => name.length).concat([0]))
+  const tagWidth = Math.max.apply (null, this.allTags().map ((tag) => tag.length).concat([0]))
   const seqIndent = tagWidth ? (tagWidth + 6) : 0;
+  const width = opts.width ? Math.max (1, opts.width - nameWidth - seqIndent - 1) : cols
   let offsets = [0]
   for (let offset = width; offset < cols; offset += width)
     offsets.push (offset)
@@ -173,4 +201,20 @@ Stockholm.prototype.toString = function (opts) {
     + "//\n"
 }
 
-module.exports = { sniff, validate, parse, parseAll, Stockholm }
+Stockholm.prototype.toFasta = function (opts) {
+  opts = opts || { width: 80 }
+  const cols = this.columns()
+  const width = opts.width || cols
+  let offsets = [0]
+  for (let offset = width; offset < cols; offset += width)
+    offsets.push (offset)
+  return this.allNames()
+    .map ((name) =>
+          (this.seqdata[name]
+           ? (">" + name + "\n"
+              + offsets.map ((offset) => this.seqdata[name].substr (offset, width) + "\n").join(''))
+           : ''))
+    .join('')
+}
+
+module.exports = { sniff, validate, parse, parseAll, fromSeqIndex, fromRowList, Stockholm }
