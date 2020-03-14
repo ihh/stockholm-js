@@ -3,8 +3,8 @@ const Stockholm = require('../index.js');
 const fs = require('fs');
 
 const text = fs.readFileSync ('data/Lysine.stock').toString();
-const expected = fs.readFileSync ('data/Lysine.out').toString()
-const expected2 = fs.readFileSync ('data/Lysine.out2').toString()
+const expected = fs.readFileSync ('test/Lysine.out').toString()
+const expected2 = fs.readFileSync ('test/Lysine.out2').toString()
 
 const dummyText = "Not a Stockholm file";
 const fakeText = "# STOCKHOLM 1.0\nBut it's not actually a Stockholm file\n";
