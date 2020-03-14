@@ -10,7 +10,7 @@ let Stockholm = function() {
   return this
 }
 
-const formatStartRegex = /^# STOCKHOLM/;
+const formatStartRegex = /^# STOCKHOLM 1.0/;
 const formatEndRegex = /^\/\/\s*$/;
 const gfRegex = /^#=GF\s+(\S+)\s+(.*?)\s*$/;
 const gcRegex = /^#=GC\s+(\S+)\s+(.*?)\s*$/;
