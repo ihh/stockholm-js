@@ -3,8 +3,9 @@ let Stockholm = function() {
               gc: {},  // gc[tag] = STRING
               gs: {},  // gs[tag][seqname] = ARRAY
               gr: {},  // gr[tag][seqname] = STRING
-              seqname: [],
-              seqdata: {} }
+              seqname: [],  // optional, specify ordering of rows
+              seqdata: {}  // seqdata[seqname] = STRING
+            }
   Object.keys(obj).forEach ((prop) => this[prop] = obj[prop])
   return this
 }
