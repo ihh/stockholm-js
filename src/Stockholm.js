@@ -19,7 +19,7 @@ const grRegex = /^#=GR\s+(\S+)\s+(\S+)\s+(.*?)\s*$/;
 const lineRegex = /^\s*(\S+)\s+(\S+)\s*$/;
 const nonwhiteRegex = /\S/;
 
-const noFormatStart = "No format header: #=STOCKHOLM 1.0";
+const noFormatStart = "No format header: # STOCKHOLM 1.0";
 const noFormatEnd = "No format footer: //";
 const badLine = "Malformed line";
 const atLine = (n) => "(At line " + (n+1) + ") ";
