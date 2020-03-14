@@ -1,4 +1,4 @@
-# Stockholm
+# stockholm-js
 
 JavaScript parser for [Stockholm format](https://en.wikipedia.org/wiki/Stockholm_format).
 
