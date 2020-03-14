@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ihh/Stockholm.git"
+    "url": "git+https://github.com/ihh/stockholm-js.git"
   },
   "author": "Ian Holmes <ihholmes@gmail.com>",
   "license": "(MIT OR BSD-3-Clause)",
   "bugs": {
-    "url": "https://github.com/ihh/Stockholm/issues"
+    "url": "https://github.com/ihh/stockholm-js/issues"
   },
-  "homepage": "https://github.com/ihh/Stockholm#readme",
+  "homepage": "https://github.com/ihh/stockholm-js#readme",
   "dependencies": {},
   "devDependencies": {
     "mocha": "^7.1.0"
