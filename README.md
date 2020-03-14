@@ -9,9 +9,9 @@ const Stockholm = require('stockholm-js');
 const fs = require('fs');
 
 const text = fs.readFileSync ('data/Lysine.stock').toString();
-let align = Stockholm.parse (text);
 
-if (Stockholm.sniff (align)) {
+if (Stockholm.sniff (text)) {
+  let align = Stockholm.parse (text);
   let rows = align.rows(),
       columns = align.columns(),
       names = align.seqname;
