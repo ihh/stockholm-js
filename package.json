@@ -1,5 +1,5 @@
 {
-  "name": "Stockholm",
+  "name": "stockholm-js",
   "version": "1.0.0",
   "description": "Stockholm format alignment parser",
   "main": "index.js",
@@ -16,8 +16,7 @@
     "url": "https://github.com/ihh/Stockholm/issues"
   },
   "homepage": "https://github.com/ihh/Stockholm#readme",
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "mocha": "^7.1.0"
   }

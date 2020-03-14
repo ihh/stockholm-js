@@ -5,7 +5,7 @@ JavaScript parser for [Stockholm format](https://en.wikipedia.org/wiki/Stockholm
 ## Usage
 
 ~~~~
-const Stockholm = require('Stockholm');
+const Stockholm = require('stockholm-js');
 
 let align = Stockholm.parse (fs.readFileSync ('data/Lysine.stock').toString());
 
