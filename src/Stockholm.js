@@ -218,4 +218,10 @@ Stockholm.prototype.toFasta = function (opts) {
     .join('')
 }
 
+Stockholm.prototype.toRowList = function (opts) {
+  return this.allNames()
+    .filter ((name) => this.seqdata[name])
+    .map ((name) => [name, this.seqdata[name]])
+}
+
 module.exports = { sniff, validate, parse, parseAll, fromSeqIndex, fromRowList, Stockholm }

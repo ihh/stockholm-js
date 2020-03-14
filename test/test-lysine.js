@@ -145,4 +145,10 @@ describe ('Stockholm test', function() {
     assert.equal (fromRows.toString(), expectedFrom)
     done()
   })
+
+  it ('should convert to a row list', function (done) {
+    const fromRows = Stockholm.fromRowList (rowList)
+    assert.equal (JSON.stringify(fromRows.toRowList()), JSON.stringify(rowList))
+    done()
+  })
 })
