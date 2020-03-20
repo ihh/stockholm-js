@@ -224,4 +224,5 @@ Stockholm.prototype.toRowList = function (opts) {
     .map ((name) => [name, this.seqdata[name]])
 }
 
-module.exports = { sniff, validate, parse, parseAll, fromSeqIndex, fromRowList, Stockholm }
+if (typeof(module) !== 'undefined')
+  module.exports = { sniff, validate, parse, parseAll, fromSeqIndex, fromRowList, Stockholm }
