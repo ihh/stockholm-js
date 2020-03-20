@@ -1,4 +1,4 @@
-let Stockholm = function() {
+const Stockholm = function() {
   let obj = { gf: {},  // gf[tag] = ARRAY
               gc: {},  // gc[tag] = STRING
               gs: {},  // gs[tag][seqname] = ARRAY
