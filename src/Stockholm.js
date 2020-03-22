@@ -71,14 +71,14 @@ const parseAll = (text, opts) => {
       stock.gc[match[1]] += match[2];
     } else if (match = gsRegex.exec(line)) {
       makeStock();
-      stock.gs[match[1]] = stock.gs[match[1]] || {};
-      stock.gs[match[1]][match[2]] = stock.gs[match[1]][match[2]] || [];
-      stock.gs[match[1]][match[2]].push (match[3]);
+      stock.gs[match[2]] = stock.gs[match[2]] || {};
+      stock.gs[match[2]][match[1]] = stock.gs[match[2]][match[1]] || [];
+      stock.gs[match[2]][match[1]].push (match[3]);
     } else if (match = grRegex.exec(line)) {
       makeStock();
-      stock.gr[match[1]] = stock.gr[match[1]] || {};
-      stock.gr[match[1]][match[2]] = stock.gr[match[1]][match[2]] || '';
-      stock.gr[match[1]][match[2]] += match[3];
+      stock.gr[match[2]] = stock.gr[match[2]] || {};
+      stock.gr[match[2]][match[1]] = stock.gr[match[2]][match[1]] || '';
+      stock.gr[match[2]][match[1]] += match[3];
     } else if (match = lineRegex.exec(line)) {
       makeStock();
       if (!stock.seqdata[match[1]]) {
