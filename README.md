@@ -28,7 +28,7 @@ if (Stockholm.sniff (text)) {
   console.warn ("Consensus structure is " + align.gc.SS_cons)
   
   const seq = 'M93419.1/332-511'
-  console.warn ("Structure of " + seq + " is " + align.gr.SS[seq])
+  console.warn ("Structure of " + seq + " is " + align.gr[seq].SS)
   console.warn ("First column of " + seq + " is " + align.seqdata[seq][0])
 
   console.log (align.toString());
