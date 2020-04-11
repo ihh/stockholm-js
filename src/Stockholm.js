@@ -194,15 +194,18 @@ Stockholm.prototype.toString = function (opts) {
   const seqIndent = tagWidth ? (tagWidth + 6) : 0;
   const width = opts.width ? Math.max (1, opts.width - nameWidth - seqIndent - 1) : cols
   const pad = opts.indentNames ? leftPad : rightPad
+  const padTagName = (opts.indentNames
+                      ? ((tag, name) => leftPad(tag,tagWidth) + " " + leftPad(name,nameWidth))
+                      : ((tag, name) => rightPad(tag+" "+name,tagWidth+nameWidth+1)))
   let offsets = [0]
   for (let offset = width; offset < cols; offset += width)
     offsets.push (offset)
   return "# STOCKHOLM 1.0\n"
     + Object.keys(this.gf).sort().map (tag => this.gf[tag].map((line) => "#=GF " + pad(tag,tagWidth) + " " + line + "\n").join('')).join('')
-    + Object.keys(this.gs).sort().map (tag => Object.keys(this.gs[tag]).map((name) => this.gs[tag][name].map ((line) => "#=GS " + pad(tag,tagWidth) + " " + pad(name,nameWidth) + " " + line + "\n").join('')).join('')).join('')
+    + Object.keys(this.gs).sort().map (tag => Object.keys(this.gs[tag]).map((name) => this.gs[tag][name].map ((line) => "#=GS " + padTagName(tag,name) + " " + line + "\n").join('')).join('')).join('')
     + offsets.map ((offset) =>
                    Object.keys(this.gc).sort().map (tag => "#=GC " + pad(tag,tagWidth) + space(nameWidth+2) + this.gc[tag].substr(offset,width) + "\n").join('')
-                   + names.map ((name) => Object.keys(this.gr).filter ((tag) => this.gr[tag][name]).sort().map ((tag) => "#=GR " + pad(tag,tagWidth) + " " + pad(name,nameWidth) + " " + this.gr[tag][name].substr(offset,width) + "\n").join('')
+                   + names.map ((name) => Object.keys(this.gr).filter ((tag) => this.gr[tag][name]).sort().map ((tag) => "#=GR " + padTagName(tag,name) + " " + this.gr[tag][name].substr(offset,width) + "\n").join('')
                                 + (this.seqdata[name]
                                    ? (pad(name,nameWidth+seqIndent)
                                       + " " + this.seqdata[name].substr(offset,width) + "\n")
