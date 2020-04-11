@@ -176,28 +176,36 @@ function leftPad (text, width) {
   return text
 }
 
+function rightPad (text, width) {
+  while (text.length < width)
+    text = text + ' '
+  return text
+}
+
 function space (width) {
   return leftPad ("", width)
 }
 
 Stockholm.prototype.toString = function (opts) {
-  opts = opts || { width: 80 }
+  opts = opts || { width: 80, indentNames: false }
   const names = this.allNames(), cols = this.columns()
   const nameWidth = Math.max.apply (null, names.map ((name) => name.length).concat([0]))
   const tagWidth = Math.max.apply (null, this.allTags().map ((tag) => tag.length).concat([0]))
   const seqIndent = tagWidth ? (tagWidth + 6) : 0;
   const width = opts.width ? Math.max (1, opts.width - nameWidth - seqIndent - 1) : cols
+  const pad = opts.indentNames ? leftPad : rightPad
   let offsets = [0]
   for (let offset = width; offset < cols; offset += width)
     offsets.push (offset)
   return "# STOCKHOLM 1.0\n"
-    + Object.keys(this.gf).sort().map (tag => this.gf[tag].map((line) => "#=GF " + leftPad(tag,tagWidth) + " " + line + "\n").join('')).join('')
-    + Object.keys(this.gs).sort().map (tag => Object.keys(this.gs[tag]).map((name) => this.gs[tag][name].map ((line) => "#=GS " + leftPad(tag,tagWidth) + " " + leftPad(name,nameWidth) + " " + line + "\n").join('')).join('')).join('')
+    + Object.keys(this.gf).sort().map (tag => this.gf[tag].map((line) => "#=GF " + pad(tag,tagWidth) + " " + line + "\n").join('')).join('')
+    + Object.keys(this.gs).sort().map (tag => Object.keys(this.gs[tag]).map((name) => this.gs[tag][name].map ((line) => "#=GS " + pad(tag,tagWidth) + " " + pad(name,nameWidth) + " " + line + "\n").join('')).join('')).join('')
     + offsets.map ((offset) =>
-                   Object.keys(this.gc).sort().map (tag => "#=GC " + leftPad(tag,tagWidth) + space(nameWidth+2) + this.gc[tag].substr(offset,width) + "\n").join('')
-                   + names.map ((name) => Object.keys(this.gr).filter ((tag) => this.gr[tag][name]).sort().map ((tag) => "#=GR " + leftPad(tag,tagWidth) + " " + leftPad(name,nameWidth) + " " + this.gr[tag][name].substr(offset,width) + "\n").join('')
+                   Object.keys(this.gc).sort().map (tag => "#=GC " + pad(tag,tagWidth) + space(nameWidth+2) + this.gc[tag].substr(offset,width) + "\n").join('')
+                   + names.map ((name) => Object.keys(this.gr).filter ((tag) => this.gr[tag][name]).sort().map ((tag) => "#=GR " + pad(tag,tagWidth) + " " + pad(name,nameWidth) + " " + this.gr[tag][name].substr(offset,width) + "\n").join('')
                                 + (this.seqdata[name]
-                                   ? (leftPad(name,nameWidth+seqIndent) + " " + this.seqdata[name].substr(offset,width) + "\n")
+                                   ? (pad(name,nameWidth+seqIndent)
+                                      + " " + this.seqdata[name].substr(offset,width) + "\n")
                                    : '')).join('')).join("\n")
     + "//\n"
 }

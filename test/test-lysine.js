@@ -5,12 +5,13 @@ const fs = require('fs');
 const text = fs.readFileSync ('data/Lysine.stock').toString();
 const expected = fs.readFileSync ('test/Lysine.out').toString()
 const expected2 = fs.readFileSync ('test/Lysine.out2').toString()
+const expected3 = fs.readFileSync ('test/Lysine.out3').toString()
 const expectedFasta = fs.readFileSync ('test/Lysine.fasta').toString()
 
 const seqIndex = { b: 'EFGH', xxx: 'ABCD', c: 'IJKL' }  // note out of order
 const seqOrder = ['xxx', 'b', 'c']
 const rowList = [['xxx', 'ABCD'], ['b', 'EFGH'], ['c', 'IJKL']]
-const expectedFrom = "# STOCKHOLM 1.0\nxxx ABCD\n  b EFGH\n  c IJKL\n//\n"
+const expectedFrom = "# STOCKHOLM 1.0\nxxx ABCD\nb   EFGH\nc   IJKL\n//\n"
 
 const dummyText = "Not a Stockholm file";
 const fakeText = "# STOCKHOLM 1.0\nBut it's not actually a Stockholm file\n";
@@ -67,8 +68,14 @@ describe ('Stockholm test', function() {
   })
   
   it ('should serialize back to Stockholm', function (done) {
-    const out = align.toString ({ width: 118 })
+    const out = align.toString ({ width: 118, indentNames: true })
     assert.equal (out, expected)
+    done()
+  })
+  
+  it ('should not indent names unless asked', function (done) {
+    const out = align.toString ({ width: 118, indentNames: false })
+    assert.equal (out, expected3)
     done()
   })
 
@@ -90,7 +97,7 @@ describe ('Stockholm test', function() {
   })
 
   it ('should serialize to a new alignment', function (done) {
-    const out2 = align.toString ({ width: 118 })
+    const out2 = align.toString ({ width: 118, indentNames: true })
     assert.equal (out2, expected2)
     done()
   })
@@ -106,7 +113,7 @@ describe ('Stockholm test', function() {
   })
 
   it ('should serialize back to the original alignment', function (done) {
-    const out3 = align.toString ({ width: 118 })
+    const out3 = align.toString ({ width: 118, indentNames: true })
     assert.equal (out3, expected)
     done()
   })
