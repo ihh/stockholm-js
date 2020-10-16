@@ -35,7 +35,7 @@ const validate = (text) => {
   return true
 }
 
-const error = (err) => { throw err; }
+const error = (err) => { throw new Error (err); }
 const warning = (err) => console.warn(err);
 
 const parseAll = (text, opts) => {
