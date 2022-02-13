@@ -34,6 +34,9 @@ if (Stockholm.sniff (text)) {
   console.log (align.toString());
   console.log (align.toFasta());
 
+  const first5cols = align.extractColumnRange (0, 4);   // or extractCols([0,1,2,3,4])
+  console.log (first5cols.toString());
+
 } else {
   console.error ("Doesn't look like Stockholm format");
 }
@@ -43,4 +46,5 @@ console.log (align2.toString())
 
 const align3 = Stockholm.fromRowList ([['ancestor', 'AAAA'], ['descendant', 'AAGA']])
 console.log (align3.toFasta())
+
 ~~~~

@@ -167,7 +167,43 @@ Stockholm.prototype.deleteRow = function (name) {
     error ("Row not found")
   this.seqname = this.seqname.filter ((n) => n !== name);
   delete this.seqdata[name];
+  Object.keys(this.gr).forEach ((tag) => delete this.gr[tag][name]);
+  Object.keys(this.gs).forEach ((tag) => delete this.gs[tag][name]);
   return this
+}
+
+const copy = (obj, copyFunc) => { let copy = {}; Object.keys(obj).forEach ((key) => copy[key] = copyFunc (obj[key])); return copy; };
+const copyObject = (obj) => copy (obj, (a) => a.slice(0));
+const copyObject2 = (obj) => copy (obj, (a) => copyObject(a));
+
+Stockholm.prototype.copy = function() {
+  let stock = new Stockholm();
+  stock.seqname = this.seqname.slice(0);
+  stock.seqdata = copyObject (this.seqdata);
+  stock.gf = copyObject (this.gf);
+  stock.gc = copyObject (this.gc);
+  stock.gs = copyObject2 (this.gs);
+  stock.gr = copyObject2 (this.gr);
+  return stock;
+}
+
+const getStrChars = (s, cols) => cols.map ((col) => s[col]).join('');
+const copyObjectStrChars = (obj, cols) => copy (obj, (s) => getStrChars (s, cols));
+const copyObjectStrChars2 = (obj, cols) => copy (obj, (s) => copyObjectStrChars (s, cols));
+
+Stockholm.prototype.extractColumns = function (colArray) {  // 0-indexed
+  let stock = new Stockholm();
+  stock.seqname = this.seqname.slice(0);
+  stock.seqdata = copyObjectStrChars (this.seqdata, colArray);
+  stock.gf = copyObject (this.gf);
+  stock.gc = copyObjectStrChars (this.gc, colArray);
+  stock.gs = copyObject2 (this.gs);
+  stock.gr = copyObjectStrChars2 (this.gr, colArray);
+  return stock
+}
+
+Stockholm.prototype.extractColumnRange = function (startCol, endCol) {  // 0-indexed
+  return this.extractColumns (new Array(endCol+1-startCol).fill(0).map ((_val, n) => startCol + n));
 }
 
 function leftPad (text, width) {

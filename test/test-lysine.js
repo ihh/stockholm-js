@@ -7,6 +7,7 @@ const expected = fs.readFileSync ('test/Lysine.out').toString()
 const expected2 = fs.readFileSync ('test/Lysine.out2').toString()
 const expected3 = fs.readFileSync ('test/Lysine.out3').toString()
 const expectedFasta = fs.readFileSync ('test/Lysine.fasta').toString()
+const expectedCols = fs.readFileSync ('test/Lysine.cols2345.out').toString()
 
 const seqIndex = { b: 'EFGH', xxx: 'ABCD', c: 'IJKL' }  // note out of order
 const seqOrder = ['xxx', 'b', 'c']
@@ -156,6 +157,27 @@ describe ('Stockholm test', function() {
   it ('should convert to a row list', function (done) {
     const fromRows = Stockholm.fromRowList (rowList)
     assert.equal (JSON.stringify(fromRows.toRowList()), JSON.stringify(rowList))
+    done()
+  })
+
+  it ('should do a deep-copy', function (done) {
+    const copy = align.copy()
+    assert.equal (copy.rows(), 60)
+    copy.deleteRow ('J03294.1/2297-2476')
+    assert.equal (copy.rows(), 59)
+    assert.equal (align.rows(), 60)
+    done()
+  })
+  
+  it ('should extract specified columns', function (done) {
+    const cols = align.extractColumns ([2,3,4,5])
+    assert.equal (cols.toString(), expectedCols)
+    done()
+  })
+
+  it ('should extract a range of columns', function (done) {
+    const cols = align.extractColumnRange (2, 5)
+    assert.equal (cols.toString(), expectedCols)
     done()
   })
 })
