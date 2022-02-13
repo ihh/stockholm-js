@@ -180,4 +180,25 @@ describe ('Stockholm test', function() {
     assert.equal (cols.toString(), expectedCols)
     done()
   })
+
+  it ('should map alignment to sequence co-ordinates', function (done) {
+    const pos2col = align.seqpos2col ('AE001799.1/20444-20268')
+    assert.equal (pos2col[0], 1)
+    assert.equal (pos2col[1], 2)
+    assert.equal (pos2col[13], 14)
+    assert.equal (pos2col[14], 16)
+    done()
+  })
+
+  it ('should map sequence to alignment co-ordinates', function (done) {
+    const col2pos = align.col2seqpos ('AE001799.1/20444-20268')
+    assert.equal (col2pos[0], -0.5)
+    assert.equal (col2pos[1], 0)
+    assert.equal (col2pos[2], 1)
+    assert.equal (col2pos[14], 13)
+    assert.equal (col2pos[15], 13.5)
+    assert.equal (col2pos[16], 14)
+    done()
+  })
+  
 })

@@ -192,6 +192,10 @@ const copyObjectStrChars = (obj, cols) => copy (obj, (s) => getStrChars (s, cols
 const copyObjectStrChars2 = (obj, cols) => copy (obj, (s) => copyObjectStrChars (s, cols));
 
 Stockholm.prototype.extractColumns = function (colArray) {  // 0-indexed
+  const cols = this.columns();
+  const badCols = colArray.filter ((col) => col < 0 || col >= cols);
+  if (badCols.length)
+    error ("Bad column indices: " + badCols.join(','));
   let stock = new Stockholm();
   stock.seqname = this.seqname.slice(0);
   stock.seqdata = copyObjectStrChars (this.seqdata, colArray);
@@ -199,11 +203,30 @@ Stockholm.prototype.extractColumns = function (colArray) {  // 0-indexed
   stock.gc = copyObjectStrChars (this.gc, colArray);
   stock.gs = copyObject2 (this.gs);
   stock.gr = copyObjectStrChars2 (this.gr, colArray);
-  return stock
+  return stock;
 }
 
 Stockholm.prototype.extractColumnRange = function (startCol, endCol) {  // 0-indexed
   return this.extractColumns (new Array(endCol+1-startCol).fill(0).map ((_val, n) => startCol + n));
+}
+
+Stockholm.prototype.defaultGapChars = ".-";
+
+Stockholm.prototype.seqpos2col = function (seqname, gapChars) {
+  gapChars = gapChars || this.defaultGapChars;
+  if (!this.seqdata[seqname])
+    error ("Row not found");
+  const seq = this.seqdata[seqname];
+  return seq.split('').map ((c, col) => gapChars.indexOf (seq[col]) < 0 ? col : -1).filter ((col) => col >= 0);
+}
+
+Stockholm.prototype.col2seqpos = function (seqname, gapChars) {
+  gapChars = gapChars || this.defaultGapChars;
+  if (!this.seqdata[seqname])
+    error ("Row not found");
+  const seq = this.seqdata[seqname];
+  let pos = -1;
+  return seq.split('').map ((c, col) => gapChars.indexOf (seq[col]) < 0 ? ++pos : (pos + 0.5));
 }
 
 function leftPad (text, width) {

@@ -37,6 +37,11 @@ if (Stockholm.sniff (text)) {
   const first5cols = align.extractColumnRange (0, 4);   // or extractColumns([0,1,2,3,4])
   console.log (first5cols.toString());
 
+  let pos2col = align.seqpos2col (seq), col2pos = align.col2seqpos (seq);
+  let pos = 30, col = pos2col[pos];
+  console.log (`Base ${pos} of sequence ${seq} is in column ${col} (0-indexed)`);
+  console.log (`Check: ${pos} === ${col2pos[col]}`);
+
 } else {
   console.error ("Doesn't look like Stockholm format");
 }
