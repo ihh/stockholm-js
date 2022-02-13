@@ -34,7 +34,7 @@ if (Stockholm.sniff (text)) {
   console.log (align.toString());
   console.log (align.toFasta());
 
-  const first5cols = align.extractColumnRange (0, 4);   // or extractCols([0,1,2,3,4])
+  const first5cols = align.extractColumnRange (0, 4);   // or extractColumns([0,1,2,3,4])
   console.log (first5cols.toString());
 
 } else {
