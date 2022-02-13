@@ -19,5 +19,8 @@
   "dependencies": {},
   "devDependencies": {
     "mocha": "^7.1.0"
+  },
+  "directories": {
+    "test": "test"
   }
 }
